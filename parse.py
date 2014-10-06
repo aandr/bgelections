@@ -6,8 +6,8 @@ from lxml import etree
 import codecs
 
 def scan():
-    out = codecs.open('results.csv', 'w', 'cp1251')
-    headers_out = False
+    out = codecs.open('results.csv', 'w', 'cp1251') # export as cp-1251, because Excel on Mac can't deal with UTF-8
+    header = None
 
     all_protos = []
 
@@ -22,16 +22,15 @@ def scan():
                 res = parse_protocol(area + filename.split('.')[0])
                 all_protos.append(res)
 
-                if not headers_out:
-                    out.write(",".join(res.keys()) + "\n")
-                    headers_out = True
+                if not header:
+                    header = res.keys()
+                    out.write(",".join(header) + "\n")
 
-                out.write(",".join(res.values()) + "\n")
+                values = [res.get(key, '0') for key in header]
+                out.write(",".join(values) + "\n")
 
     out.close()
-
     return all_protos
-
 
 def protocol_id_to_filepath(protocol_id):
     protocol_id = protocol_id
